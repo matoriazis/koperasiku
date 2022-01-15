@@ -17,6 +17,7 @@ class AccessChief
     public function handle(Request $request, Closure $next)
     {
         if(\Auth::user()->role == 'chief'){
+            dd('IM CHIEF BITCH!');
             return $next($request);
         }
 
