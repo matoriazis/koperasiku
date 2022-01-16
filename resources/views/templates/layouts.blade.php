@@ -63,7 +63,7 @@
                     </li>
                     @if (\Auth::user()->role === 'chief')
                         <li>
-                            <a href="{{route('chief.confirm.loan.index')}}">
+                            <a href="{{ route('chief.confirm.loan.index') }}">
                                 <i class="tim-icons icon-bank"></i>
                                 <p>Konfirmasi Peminjaman</p>
                             </a>
@@ -76,25 +76,25 @@
                         </li>
                     @elseif (\Auth::user()->role === 'officer')
                         <li>
-                            <a href="{{route('officer.payments.menu')}}">
+                            <a href="{{ route('officer.payments.menu') }}">
                                 <i class="tim-icons icon-credit-card"></i>
                                 <p>Pembayaran</p>
                             </a>
                         </li>
                         <li>
-                            <a href="{{route('officer.savings.index', ['type' => 'wajib'])}}">
+                            <a href="{{ route('officer.savings.index', ['type' => 'wajib']) }}">
                                 <i class="tim-icons icon-atom"></i>
                                 <p>Data Simpanan</p>
                             </a>
                         </li>
                         <li>
-                            <a href="{{route('officer.loans.index')}}">
+                            <a href="{{ route('officer.loans.index') }}">
                                 <i class="tim-icons icon-pin"></i>
                                 <p>Data Pinjaman</p>
                             </a>
                         </li>
                         <li>
-                            <a href="{{route('officer.loans.installment')}}">
+                            <a href="{{ route('officer.loans.installment') }}">
                                 <i class="tim-icons icon-bell-55"></i>
                                 <p>Data Angsuran</p>
                             </a>
@@ -119,7 +119,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{route('member.slip.index')}}">
+                            <a href="{{ route('member.slip.index') }}">
                                 <i class="tim-icons icon-paper"></i>
                                 <p>Slip</p>
                             </a>
@@ -153,7 +153,15 @@
                             <li class="dropdown nav-item" style="width: 235px;">
                                 <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
                                     <div>
-                                        <p>{{ \Auth::user()->name . ' (' . strtoupper(\Auth::user()->role) . ')' }}</p>
+                                        <p>{{ \Auth::user()->name }}
+                                        </p>
+                                        @if ( \Auth::user()->role == 'chief')
+                                            <span class="badge badge-primary">Ketua</span>
+                                        @elseif(\Auth::user()->role == 'officer')
+                                            <span class="badge badge-success">Petugas</span>    
+                                        @else
+                                            <span class="badge badge-info">Anggota</span>    
+                                        @endif
                                     </div>
                                     <b class="caret d-none d-lg-block d-xl-block"></b>
                                 </a>

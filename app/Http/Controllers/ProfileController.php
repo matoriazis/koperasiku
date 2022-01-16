@@ -38,6 +38,7 @@ class ProfileController extends Controller
         $payload = $request->except(['_token']);
         $payload['status'] = Profile::PROFILE_SUBMITTED;
         $payload['user_id'] = $this->getUserId();
+        $payload['salary'] = 0;
         $profile = Profile::create($payload);
 
         return redirect(route('member.dashboard'));

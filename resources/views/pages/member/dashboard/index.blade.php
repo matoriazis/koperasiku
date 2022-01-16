@@ -54,18 +54,24 @@
                     <form action="{{route('member.confirm.payment')}}" method="POST" enctype="multipart/form-data">@csrf
                         <div class="form-group">
                             <label for="">Jumlah <span class="mandatory">*</span></label>
-                            <input type="number" required class="form-control" name="amount" placeholder="Masukan jumlah">
+                            <input type="number" value="30000" required class="form-control" name="amount" placeholder="Masukan jumlah">
                         </div>
                         <div class="form-group">
                             <label for="tanggal">Tanggal Transfer <span class="mandatory">*</span></label>
-                            <input type="date" required class="form-control" name="date" placeholder="Masukan Tanggal">
+                            <input type="date" required class="form-control" name="date" value="{{date('Y-m-d')}}" placeholder="Masukan Tanggal">
                         </div>
                         <div>
                             <label for="file">Unggah Bukti Pembayaran</label> <br>
                             <input type="file" name="file" accept="image/*" >
                         </div>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                        <button type="submit" class="btn btn-primary">Konfirmasi Pembayaran Sekarang</button>
+                        <div class="row mt-4">
+                            <div class="col-md-4">
+                                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Tutup</button>
+                            </div>
+                            <div class="col-md-8">
+                                <button type="submit" class="btn btn-success btn-sm">Konfirmasi Pembayaran Sekarang</button>
+                            </div>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">

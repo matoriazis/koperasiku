@@ -33,13 +33,13 @@ class Profile extends Model
 
         if($lastRecord){
             if($lastRecord->code == null){
-                return $tempCode .'.'. sprintf("%'.04d\n", 1);
+                return $tempCode .'.'. sprintf("%'.04d", 1);
             }else{
                 $explodeLastCode = explode('.', $lastRecord->code);
                 $newIteration = (int) $explodeLastCode[count($explodeLastCode) - 1];
                 do {
                     $newIteration++;
-                    $newTempCode = $tempCode .'.'. sprintf("%'.04d\n", $newIteration);
+                    $newTempCode = $tempCode .'.'. sprintf("%'.04d", $newIteration);
                 } while (self::checkCodeIsExist($newTempCode));
 
                 return $newTempCode;
