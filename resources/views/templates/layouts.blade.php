@@ -106,7 +106,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" onclick="return alert('Belum release bossku!')">
+                            <a href="{{route('officer.report.in.outcome.view')}}">
                                 <i class="tim-icons icon-spaceship"></i>
                                 <p>Laporan</p>
                             </a>

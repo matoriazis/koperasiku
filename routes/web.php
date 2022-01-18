@@ -45,6 +45,11 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('anggota')->group(function() {
             Route::get('list', [AnggotaController::class, 'index'])->name('officer.members.index');
         });
+
+        Route::prefix('report')->group(function() {
+            Route::get('income-outcome-report', [ReportController::class, 'incomeOutcomeView'])->name('officer.report.in.outcome.view');
+            Route::post('income-outcome-report', [ReportController::class, 'incomeOutcome'])->name('officer.report.in.outcome');
+        });
     });
     Route::middleware(['access.chief'])->prefix('chief')->group(function() {
         Route::get('/dashboard', [DashboardController::class, 'chief'])->name('chief.dashboard');
