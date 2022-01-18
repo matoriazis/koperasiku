@@ -1,6 +1,7 @@
 @extends('../../../../templates/layouts')
 
 @section('contents')
+    @include('../../../../templates/flash')
     <div class="row">
         <div class="col-lg-4">
             <div class="card card-chart">
@@ -105,13 +106,19 @@
                                         </td>
                                         <td>
                                             @if ($item->path_to_file)
-                                                <img src="{{ url($item->path_to_file) }}" alt="">
+                                                <a href="{{ url($item->path_to_file) }}" target="_blank" title="Klik untuk memperbesar">
+                                                    <img width="100px" src="{{ url($item->path_to_file) }}"
+                                                        alt="Bukti Pembayaran IMG">
+                                                </a>
                                             @endif
                                         </td>
                                         <td class="text-center">
                                             <a href="{{ route('officer.action.payment', ['id' => $item->id]) . '?action=confirm' }}"
-                                                class="btn btn-success btn-sm">Konfirmasi</a>
-                                            <a href="#" class="btn btn-danger btn-sm">Tolak</a>
+                                                class="btn btn-success btn-sm"
+                                                onclick="return confirm('Yakin ingin meng-konfirmasi pengajuan ini?')">Konfirmasi</a>
+                                            <a href="{{ route('officer.action.payment', ['id' => $item->id]) . '?action=decline' }}"
+                                                class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Yakin ingin menolak pengajuan ini?')">Tolak</a>
                                         </td>
                                     </tr>
                                 @endforeach

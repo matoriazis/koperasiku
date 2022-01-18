@@ -9,6 +9,7 @@ use App\Http\Controllers\LoanController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\InstallmentPaymentController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\AnggotaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +40,10 @@ Route::middleware(['auth'])->group(function () {
             Route::get('simpanan', [PaymentController::class, 'savingIndex'])->name('officer.payments.simpanan');
             Route::get('get-loans/{id}', [InstallmentPaymentController::class, 'getAngsuran'])->name('officer.payments.getLoan');
             Route::post('installmentpayment', [InstallmentPaymentController::class, 'store'])->name('officer.payments.installment.store');
+        });
+        
+        Route::prefix('anggota')->group(function() {
+            Route::get('list', [AnggotaController::class, 'index'])->name('officer.members.index');
         });
     });
     Route::middleware(['access.chief'])->prefix('chief')->group(function() {

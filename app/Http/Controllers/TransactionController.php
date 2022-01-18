@@ -33,7 +33,9 @@ class TransactionController extends Controller
             $name = $file->getClientOriginalName();
             $path = $file->store('public/files');
 
-            $params['path_to_file'] = $path;
+            $f_path = str_replace('public', 'storage', $path);
+
+            $params['path_to_file'] = $f_path;
         }
 
         $trx = Transaction::create($params);
@@ -85,7 +87,11 @@ class TransactionController extends Controller
             $trx = $transactions->update($params);
     
             if($trx) {
-                return redirect(route('officer.dashboard'))->with('success', 'Berhasil '. $request->action == 'decline' ? 'melakukan konfirmasi pembayaran' : 'menolak pembayaran');
+                if($request->action === 'confirm') {
+                    return redirect(route('officer.dashboard'))->with('success', 'Berhasil melakukan konfirmasi pengajuan pembayaran!');
+                }else {
+                    return redirect(route('officer.dashboard'))->with('success', 'Berhasil menolak pengajuan pembayaran');
+                }
             }else{
                 return redirect(route('officer.dashboard'))->with('failed', 'Failed, something went wrong!');
             }

@@ -15,14 +15,14 @@ class DashboardController extends Controller
     public function chief() {
         $thisMonth = Carbon::now()->format('Y-m') . '%';
 
-        $user = User::where('role', 'member')->count();
+        $user = Profile::where('is_activated', true)->count();
         $simpananPokok = Saving::where('type', Saving::POKOK)->sum('amount');
         $simpananWajib = Saving::where('type', Saving::WAJIB)->sum('amount');
         $simpananSukarela = Saving::where('type', Saving::SUKARELA)->sum('amount');
         $simpananAll = Saving::sum('amount');
         $loanActive = Loan::where('is_confirmed', true)->where('is_settled', false)->count();
         
-        $userBulanan = User::where('role', 'member')->where('created_at', 'like', $thisMonth)->count();
+        $userBulanan = Profile::where('is_activated', true)->where('created_at', 'like', $thisMonth)->count();
         $simpananPokokBulanan = Saving::where('created_at', 'like', $thisMonth)->where('type', Saving::POKOK)->sum('amount');
         $simpananWajibBulanan = Saving::where('created_at', 'like', $thisMonth)->where('type', Saving::WAJIB)->sum('amount');
         $simpananSukarelaBulanan = Saving::where('created_at', 'like', $thisMonth)->where('type', Saving::SUKARELA)->sum('amount');
@@ -49,7 +49,7 @@ class DashboardController extends Controller
     }
     
     public function officer() {
-        $user = User::where('role', 'member')->count();
+        $user = Profile::where('is_activated', true)->count();
         $simpananPokok = Saving::where('type', Saving::POKOK)->sum('amount');
         $simpananWajib = Saving::where('type', Saving::WAJIB)->sum('amount');
         $simpananSukarela = Saving::where('type', Saving::SUKARELA)->sum('amount');

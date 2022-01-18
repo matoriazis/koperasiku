@@ -14,6 +14,7 @@ class Transaction extends Model
     public const WAITING_CONFIRMATION = 'Waiting Confirmation';
     public const PENDING = 'Pending';
     public const SUCCESSPAID = 'Paid';
+    public const DECLINED = 'Declined';
 
     protected $guarded = ['id'];
 

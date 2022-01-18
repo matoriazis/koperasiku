@@ -100,6 +100,12 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{ route('officer.members.index') }}">
+                                <i class="tim-icons icon-list"></i>
+                                <p>Data Anggota</p>
+                            </a>
+                        </li>
+                        <li>
                             <a href="#" onclick="return alert('Belum release bossku!')">
                                 <i class="tim-icons icon-spaceship"></i>
                                 <p>Laporan</p>
