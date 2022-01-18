@@ -101,7 +101,7 @@
                         </li>
                         <li>
                             <a href="{{ route('officer.members.index') }}">
-                                <i class="tim-icons icon-list"></i>
+                                <i class="tim-icons icon-bullet-list-67"></i>
                                 <p>Data Anggota</p>
                             </a>
                         </li>
