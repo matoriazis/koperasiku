@@ -69,7 +69,7 @@ class TransactionController extends Controller
                     'amount' => $transactions->amount,
                     'user_id' => $transactions->created_id,
                     'description' => 'Deposit awal pendaftaran anggota',
-                    'type' => Saving::WAJIB,
+                    'type' => Saving::POKOK,
                     'status' => Saving::LUNAS,
                     'created_id' => $this->getUserId()
                 ];
