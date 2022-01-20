@@ -130,6 +130,12 @@
                                 <p>Slip</p>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('member.profile.show') }}">
+                                <i class="tim-icons icon-single-02"></i>
+                                <p>Profil Saya</p>
+                            </a>
+                        </li>
                     @endif
                 </ul>
             </div>

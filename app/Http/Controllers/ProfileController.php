@@ -7,15 +7,6 @@ use App\Models\Profile;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -50,20 +41,11 @@ class ProfileController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        $profile = Profile::where('user_id', \Auth::user()->id)->first();
+        $this->data['profile'] = $profile;
+        return view('pages.member.profile.show', $this->data);
     }
 
     /**
@@ -73,19 +55,16 @@ class ProfileController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update($id, Request $request)
     {
-        //
-    }
+        $params = $request->only(['phone', 'address']);
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $profile = Profile::find($id);
+
+        if($profile) {
+           $update = $profile->update($params);
+           return redirect(route('member.profile.show'))->with('success', 'Berhasil menyimpan perubahan');
+        }
+        return redirect(route('member.profile.show'))->with('failed', 'Gagal Menyimpan Perubahan, coba lagi beberapa saat');
     }
 }

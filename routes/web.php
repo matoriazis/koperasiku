@@ -58,6 +58,8 @@ Route::middleware(['auth'])->group(function () {
     });
     Route::middleware(['access.member'])->group(function() {
         Route::get('/', [DashboardController::class, 'member'])->name('member.dashboard');
+        Route::get('update-profile/{id}', [ProfileController::class, 'update'])->name('member.profile.update');
+        Route::get('profile-saya', [ProfileController::class, 'show'])->name('member.profile.show');
         Route::get('formulir-pengajuan', [ProfileController::class, 'create'])->name('member.form.register');
         Route::post('formulir-pengajuan', [ProfileController::class, 'store'])->name('member.post.form');
         Route::post('confirm-payment', [TransactionController::class, 'store'])->name('member.confirm.payment');
