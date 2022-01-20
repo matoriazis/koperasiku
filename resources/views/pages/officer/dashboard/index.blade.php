@@ -34,7 +34,7 @@
             <div class="card card-chart">
                 <div class="card-header">
                     <h5 class="card-category">Pinjaman Aktif</h5>
-                    <h3 class="card-title"><i class="tim-icons icon-send text-success"></i> Rp.
+                    <h3 class="card-title"><i class="tim-icons icon-send text-success"></i>
                         {{ $count['loan_active'] }}</h3>
                 </div>
             </div>

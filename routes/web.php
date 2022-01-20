@@ -69,6 +69,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('loans/{id}', [LoanController::class, 'showMember'])->name('member.loans.show');
 
         Route::get('slip', [ReportController::class, 'slipMember'])->name('member.slip.index');
+        Route::post('slip', [ReportController::class, 'slipMemberAction'])->name('member.slip.action');
     });
 });
 
