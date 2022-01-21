@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Saving;
+use \Carbon\Carbon;
 
 class SavingController extends Controller
 {
@@ -35,6 +36,7 @@ class SavingController extends Controller
         $params = $request->except('_token');
         $params['code'] = \Hash::make($request->_token);
         $params['created_id']=$this->getUserId();
+        $params['year_month']= Carbon::now()->format('Y-m');
         $params['description']= 'Setoran '.$params['type'];
         $params['status'] = 'Lunas';
 

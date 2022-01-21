@@ -73,7 +73,7 @@ class ReportController extends Controller
                         'loan' => $reduceLoan,
                         'installment' => $installment,
                         'loan_service' => $remaining ? $remaining->loan_service : 0,
-                        'total' => $reducePokok + $reduceWajib + $reduceSukarela + $reduceLoan
+                        'total' => $reducePokok + $reduceWajib + $reduceSukarela + $reduceLoan + $installment
                     ]
                 ];
 
@@ -132,4 +132,101 @@ class ReportController extends Controller
     	return $pdf->stream('report-bulanan');
 
     }
+
+    public function shuReport(Request $request) {
+        return view('pages.chief.reports.index', $this->data);
+    }
+
+    public function detailedShu(Request $request) {
+        $list_anggota = Profile::where('is_activated', true)->orderBy('fullname', 'ASC')->get();
+
+        $tahun = $request->year;
+        $list_bulan = $this->_getListBulan($tahun);
+
+        if(count($list_anggota) > 0) {
+            $data = [];
+            foreach($list_anggota as $anggota) {
+                $temp = [
+                    'name' => $anggota->fullname
+                ];
+
+                $dataPerUser = [];
+                foreach($list_bulan as $bulan) {
+                    $loan = Loan::where('created_id', $anggota->user_id)
+                                    ->where('is_confirmed', true)->where('confirmed_at', 'like', $bulan['value'] .'%')->sum('loan_service');
+
+                    if($loan) {
+                        $savingPokok = Saving::where('user_id', $anggota->user_id)->where('type', Saving::POKOK)->where('created_at', 'like', $bulan['value'] .'%')->sum('amount');
+                        $dataPerUser[] = [
+                            'month' => $bulan['value'],
+                            'total' => $loan + $savingPokok
+                        ];
+                    }else {
+                        $dataPerUser[] = [
+                            'month' => $bulan['value'],
+                            'total' => 0
+                        ];
+                    }
+                }
+
+                $temp['data'] = $dataPerUser;
+
+                $data[] = $temp;
+            }
+            $this->data['detail_shu'] = $data;
+            $this->data['list_month'] = $list_bulan;
+
+            return view('pages.chief.reports.index', $this->data);
+        }
+
+        return 'Belum Ada Anggota';
+    }
+
+    private function _getListBulan($tahun) {
+        $temp = [];
+        $monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        for ($i=1; $i <= 12 ; $i++) { 
+            if($i < 10) {
+                $temp[] = [
+                    'label' => $monthNames[$i-1],
+                    'value' => $tahun . '-0'.$i
+                ];
+            }else{
+                $temp[] = [
+                    'label' => $monthNames[$i-1],
+                    'value' => $tahun . '-'.$i
+                ];
+            }
+        }
+        return $temp;
+    }
 }
+
+// public function detailedShuBackup(Request $request) {
+//     $year = '2022%';
+//     return \DB::select(\DB::raw("WITH anggota_list AS (
+//                     select 
+//                     p.id, p.user_id, p.fullname
+//                     from profiles p join users u on p.user_id = u.id where p.is_activated = true
+//                 )
+//             , saving_sukarela_list AS (
+//                     select s.user_id, s.year_month,
+//                     IF
+//                         ((select fl.id 
+//                             from loans fl
+//                             where fl.created_id = s.user_id and fl.confirmed_at like ?) 
+//                             is not null, 
+//                                 sum(s.amount) + (select loans.loan_service
+//                                                                         from loans where loans.created_id = s.user_id and loans.confirmed_at like ?), 
+//                                 '0') as total
+//                     from savings s where s.type = 'Pokok' 
+//                     and s.year_month like ?
+//                     group by s.user_id, s.year_month
+//                 )
+//         SELECT al.*, sl.total, sl.year_month 
+//         from anggota_list al 
+//         left join saving_sukarela_list sl 
+//         on al.user_id = sl.user_id 
+//         order by sl.year_month ASC
+//         "), [$year, $year, $year]);
+// }

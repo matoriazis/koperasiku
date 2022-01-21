@@ -69,7 +69,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" onclick="return alert('Belum release bossku!')">
+                            <a href="{{ route('chief.report.index') }}">
                                 <i class="tim-icons icon-spaceship"></i>
                                 <p>Laporan</p>
                             </a>
