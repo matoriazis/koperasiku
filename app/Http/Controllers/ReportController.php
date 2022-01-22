@@ -174,6 +174,7 @@ class ReportController extends Controller
                 $data[] = $temp;
             }
             $this->data['detail_shu'] = $data;
+            $this->data['selected_year'] = $request->year;
             $this->data['list_month'] = $list_bulan;
 
             return view('pages.chief.reports.index', $this->data);
@@ -199,6 +200,130 @@ class ReportController extends Controller
             }
         }
         return $temp;
+    }
+
+    public function generateReportShu($year, Request $request) {
+        if(!empty($year)) {
+            $paramYear = $year . '%';
+
+            $totalShu = $this->_getTotalShu($year);
+            $danaSosial = $totalShu * 0.1;
+            $danaKematian = $totalShu * 0.1;
+            $gajiPengurus = $totalShu * 0.1;
+            $sisaShu = $totalShu - ($danaSosial + $danaKematian + $gajiPengurus);
+            $simpananWajib = (int) Saving::where('created_at', 'like', $paramYear)->where('type', Saving::WAJIB)->sum('amount');
+            $simpananSukarela = (int) Saving::where('created_at', 'like', $paramYear)->where('type', Saving::SUKARELA)->sum('amount');;
+
+            $totalSimpanan = $simpananWajib + $simpananSukarela;
+            $prosentase = $sisaShu / $totalSimpanan * 1;
+            $temp_prosentase = 4.5;
+            $detailData = $this->_getDetailDataShu($year, $temp_prosentase);
+
+            $totalAll = [
+                'total_simpanan_wajib' => 0,
+                'total_simpanan_sukarela' => 0,
+                'total' => 0,
+                'total_shu_didapat' => 0,
+                'grand_total' => 0,
+            ];
+
+            $shuData = [
+                'total_shu' => $totalShu,
+                'dana_sosial' => $danaSosial,
+                'dana_kematian' => $danaKematian,
+                'gaji_pengurus' => $gajiPengurus,
+                'total_operasional' => $danaSosial + $danaKematian + $gajiPengurus,
+                'sisa_shu' => $sisaShu,
+                'simpanan_wajib' => $simpananWajib,
+                'simpanan_sukarela' => $simpananSukarela,
+                'total_simpanan' => $totalSimpanan,
+                'detail_data' => $detailData,
+                'total_all' => $totalAll,
+                'prosentase' => $temp_prosentase
+            ];
+
+            $this->data = $shuData;
+
+            $pdf = PDF::loadview('pages.chief.reports.report-view', $this->data);
+            return $pdf->stream('report-bulanan');
+        }
+
+        return redirect(route('chief.report.index'))->with('failed', 'Parameter tidak valid');
+    }
+
+    private function _getTotalShu($year) {
+        $total = 0;
+
+        $list_anggota = Profile::where('is_activated', true)->orderBy('fullname', 'ASC')->get();
+
+        $tahun = $year;
+        $list_bulan = $this->_getListBulan($tahun);
+
+        if(count($list_anggota) > 0) {
+            foreach($list_anggota as $anggota) {
+                $totalPerUser = 0;
+                foreach($list_bulan as $bulan) {
+                    $loan = Loan::where('created_id', $anggota->user_id)
+                                    ->where('is_confirmed', true)->where('confirmed_at', 'like', $bulan['value'] .'%')->sum('loan_service');
+
+                    if($loan) {
+                        $savingPokok = Saving::where('user_id', $anggota->user_id)->where('type', Saving::POKOK)->where('created_at', 'like', $bulan['value'] .'%')->sum('amount');
+                        $totalPerUser += ($loan + $savingPokok);
+                    }else {
+                        $totalPerUser += 0;
+                    }
+                }
+
+                $total += $totalPerUser;
+            }
+            // return here
+            return $total;
+        }
+
+        return 'Belum Ada Anggota';
+    }
+
+    private function _getDetailDataShu($year, $prosentase) {
+        $tahun = $year;
+        $list_bulan = $this->_getListBulan($tahun);
+        $list_anggota = Profile::where('is_activated', true)->orderBy('fullname', 'ASC')->get();
+        
+        $total = 0;
+
+        if(count($list_anggota) > 0) {
+            $data = [];
+            foreach($list_anggota as $anggota) {
+                $temp = [
+                    'name' => $anggota->fullname
+                ];
+                $wajib = 0;
+                $sukarela = 0;
+                foreach($list_bulan as $bulan) {
+                    $amountWajibPerMonth = Saving::where('user_id', $anggota->user_id)
+                                            ->where('type', Saving::WAJIB)
+                                            ->where('created_at', 'like', $bulan['value'] . '%')->sum('amount');
+
+                    $amountSukarelaPerMonth = Saving::where('user_id', $anggota->user_id)
+                                                    ->where('type', Saving::SUKARELA)
+                                                    ->where('created_at', 'like', $bulan['value'] . '%')->sum('amount');
+
+                    $wajib += $amountWajibPerMonth;
+                    $sukarela += $amountSukarelaPerMonth;
+                }
+
+                $total = $wajib + $sukarela;
+                $shuDidapat = $total * ($prosentase / 100);
+
+                $temp['wajib'] = $wajib;
+                $temp['sukarela'] = $sukarela;
+                $temp['total'] = $total;
+                $temp['shu_didapat'] = $shuDidapat;
+                $temp['grand_total'] = $sukarela + $shuDidapat;
+
+                $data[] = $temp;
+            }
+            return $data;
+        }
     }
 }
 

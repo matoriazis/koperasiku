@@ -57,6 +57,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/loan/confirm', [LoanController::class, 'actionConfirm'])->name('chief.confirm.loan.action');
         Route::get('reports', [ReportController::class, 'shuReport'])->name('chief.report.index');
         Route::post('reports', [ReportController::class, 'detailedShu'])->name('chief.detailed.shu');
+        Route::get('report-generate/{year}', [ReportController::class, 'generateReportShu'])->name('chief.shu.generate');
     });
     Route::middleware(['access.member'])->group(function() {
         Route::get('/', [DashboardController::class, 'member'])->name('member.dashboard');

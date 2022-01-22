@@ -90,7 +90,7 @@
             <h1>Rp. {{ number_format($incomes, 2) }}</h1>
         </div>
         <div class="col-2 center">
-            Pemasukan:
+            Pengeluaran:
             <h1>Rp. {{ number_format($outcomes, 2) }}</h1>
         </div>
     </div>

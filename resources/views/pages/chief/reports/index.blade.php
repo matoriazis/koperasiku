@@ -10,7 +10,7 @@
                     <input type="hidden" name="id_user" value="{{ \Auth::user()->id }}">
                     <div class="form-group">
                         <label>Silahkan masukan tahun dibawah ini untuk melihat SHU koperasi :</label>
-                        <input type="number" max="{{date('Y')}}" min="{{date('Y') - 5}}" required name="year" placeholder="Masukan Tahun SHU" class="form-control">
+                        <input type="number" max="{{date('Y')}}" min="{{date('Y') - 5}}" value="{{$selected_year ?? ''}}" required name="year" placeholder="Masukan Tahun SHU" class="form-control">
                     </div>
                     <button type="submit" class="btn btn-success">Rincian SHU</button>
                 </form>
@@ -20,8 +20,17 @@
 
     @if (isset($detail_shu))
         <div class="card">
+            <input type="hidden" value="{{$selected_year}}">
             <div class="card-header">
-                <h3><b>Rincian SHU</b></h3>
+                <div class="row">
+                    <div class="col-8">
+                        <h3><b>Rincian SHU</b></h3>
+                    </div>
+                    <div class="col-4 text-right">
+                        <a href="{{route('chief.shu.generate', ['year' => $selected_year])}}" onclick="return confirm('Generate Laporan? Klik OK untuk melanjutkan')" target="_blank" class="btn btn-success btn-sm">Generate Laporan</a>
+                        {{-- <a href="#" onclick="return confirm('Broadcast SHU {{$selected_year}} ke semua anggota? Pastikan anda telah melihat rincian dan laporan dengan benar!')" class="btn btn-info btn-sm">Broadcast SHU</a> --}}
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <table class="table table-bordered">
