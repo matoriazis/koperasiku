@@ -215,9 +215,9 @@ class ReportController extends Controller
             $simpananSukarela = (int) Saving::where('created_at', 'like', $paramYear)->where('type', Saving::SUKARELA)->sum('amount');;
 
             $totalSimpanan = $simpananWajib + $simpananSukarela;
-            $prosentase = $sisaShu / $totalSimpanan * 1;
+            $prosentase = $sisaShu / $totalSimpanan * 100;
             $temp_prosentase = 4.5;
-            $detailData = $this->_getDetailDataShu($year, $temp_prosentase);
+            $detailData = $this->_getDetailDataShu($year, $prosentase);
 
             $totalAll = [
                 'total_simpanan_wajib' => 0,
@@ -239,7 +239,7 @@ class ReportController extends Controller
                 'total_simpanan' => $totalSimpanan,
                 'detail_data' => $detailData,
                 'total_all' => $totalAll,
-                'prosentase' => $temp_prosentase
+                'prosentase' => $prosentase
             ];
 
             $this->data = $shuData;
