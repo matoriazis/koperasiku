@@ -7,11 +7,13 @@
                 <div class="card-header">
                     <div class="row">
                         <h3 class="mx-auto">Formulir Pengajuan Peminjaman</h3>
-                        <p  style="padding: 10px;">Anda hanya dapat melakukan peminjaman sebesar 2x lipat dari jumlah simpanan anda sebesar <b>{{$current_saving_formatted}}</b>, atau maksimal peminjaman anda sebesar <b>{{$max_loan_formatted}}</b></b></p>
+                        <p style="padding: 10px;">Anda hanya dapat melakukan peminjaman sebesar 2x lipat dari jumlah
+                            simpanan anda sebesar <b>{{ $current_saving_formatted }}</b>, atau maksimal peminjaman anda
+                            sebesar <b>{{ $max_loan_formatted }}</b></b></p>
                     </div>
                 </div>
                 <div class="card-body">
-                    <form action="{{route('member.loans.store')}}" method="POST"> @csrf
+                    <form action="{{ route('member.loans.store') }}" method="POST"> @csrf
                         <h4>Pemohon :</h4>
                         <div class="form-group">
                             <label for="name">Nama Lengkap <span class="required">*</span></label>
@@ -56,16 +58,18 @@
                                 placeholder="Jumlah Total" readonly>
                         </div>
                         <div class="form-group">
-                            <label for="name">Masukan berapa bulan rencana pelunasan peminjaman  <span class="required">*</span></label>
-                            <input type="number" oninput="countAngsuran()" name="total_month" id="total_month" required class="form-control"
-                                placeholder="Contoh: 12">
+                            <label for="name">Masukan berapa bulan rencana pelunasan peminjaman <span
+                                    class="required">*</span></label>
+                            <input type="number" oninput="countAngsuran()" name="total_month" id="total_month" required
+                                class="form-control" placeholder="Contoh: 12">
                         </div>
                         <div class="form-group">
                             <label for="name">Angsuran/Bulan <span class="required">*</span></label>
                             <input type="hidden" name="installment_per_month" id="angsuran" required class="form-control"
                                 placeholder="Masukan jumlah bulan diatas untuk melihat angsuran/bulan" readonly>
-                                <p id="descAngsuran" style="font-weight: bold;">Silahkan masukan bulan diatas untuk melihat jumlah angsuran per bulan</p>
-                                <p id="displayAngsuran" style="font-weight: bold;"></p>
+                            <p id="descAngsuran" style="font-weight: bold;">Silahkan masukan bulan diatas untuk melihat
+                                jumlah angsuran per bulan</p>
+                            <p id="displayAngsuran" style="font-weight: bold;"></p>
                         </div>
                         <div class="form-group">
                             <label for="name">Untuk Keperluan <span class="required">*</span></label>
@@ -81,6 +85,16 @@
                                 bertanggung jawab membayar pinjaman tersebut adalah suami/istri/anak saya yang sudah dewasa,
                                 atau saya bersedia jika Koperasi Simpan Pinjam Warna Mandiri mengambil tindakan lain.</li>
                         </ul>
+                        <div class="col-md-12">
+                            <p>Silahkan tanda tangan dibawah ini!</p>
+                            <canvas id="signature" width="450" height="150" style="border: 1px solid #ddd;"></canvas>
+                            <button type="button" id="console"
+                                style="background: transparent; border: none; color: rgb(12, 176, 12);"><i
+                                    class="fa fa-check"></i></button>
+                            <button type="button" id="clear" style="background: transparent; border: none; color: grey;"><i
+                                    class="fa fa-trash"></i></button>
+                        </div>
+                        <input type="hidden" name="sign" id="sign"/>
                         <div class="form-check">
                             <input class="form-check-input" required type="checkbox" value="" id="tnc"
                                 style="margin-left: 2px;">
@@ -89,7 +103,9 @@
                             </label>
                         </div>
                         <div class="row">
-                            <button type="submit" class="btn btn-success w-100" style="margin-top: 15px">Ajukan
+                            <button type="submit"
+                                onclick="return confirm('Pastikan data yang anda masukan sudah benar dan anda telah mengeklik tombol ceklist hijau pada samping papan tanda tangan!')"
+                                class="btn btn-success w-100" style="margin-top: 15px">Ajukan
                                 Sekarang</button>
                         </div>
                     </form>
@@ -116,17 +132,18 @@
             var total = 0
             month = $('#total_month').val()
             total = $('#total').val()
-            
+
             angsuran = parseInt(total) / parseInt(month)
             angsuran = Math.ceil(angsuran)
             $('#angsuran').val(angsuran)
-            $('#descAngsuran').hide()  
-            if(angsuran > 0 && angsuran != '') {
-                $('#displayAngsuran').text( 'Rp ' + numberWithCommas(angsuran) + '/Bulan')
-            }else{
+            $('#descAngsuran').hide()
+            if (angsuran > 0 && angsuran != '') {
+                $('#displayAngsuran').text('Rp ' + numberWithCommas(angsuran) + '/Bulan')
+            } else {
                 $('#displayAngsuran').text('Silahkan masukan bulan diatas untuk melihat jumlah angsuran per bulan')
             }
         }
+
         function countLoanServiceAndTotal() {
             var amount = 0
             var service = 0
@@ -139,8 +156,51 @@
             $('#loanService').val(service)
             $('#total').val(total)
         }
+
         function numberWithCommas(x) {
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
+    </script>
+@endpush
+
+
+@push('styles')
+    <link href="{{ asset('assets/css/jquery.signature.css') }}" rel="stylesheet" />
+    <style>
+        .kbw-signature {
+            width: 400px;
+            height: 200px;
+        }
+
+        #sig canvas {
+            width: 100% !important;
+            height: auto;
+        }
+
+    </style>
+@endpush
+
+@push('scripts')
+    {{-- <script type="text/javascript" src="{{ asset('assets/js/jquery.signature.min.js') }}"></script> --}}
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js">
+    </script>
+
+    <script>
+        $(document).ready(function() {
+
+            var canvas = document.getElementById("signature");
+            var signaturePad = new SignaturePad(canvas, {
+                syncField: '#sign'
+            });
+
+            $('#clear').on('click', function() {
+                signaturePad.clear();
+            });
+            $('#console').on('click', function() {
+                console.log(signaturePad.toDataURL())
+                let sign = signaturePad.toDataURL()
+                $('#sign').val(sign)
+            });
+        });
     </script>
 @endpush

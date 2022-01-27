@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\InstallmentPayment;
+use App\Models\Saving;
 
 class Loan extends Model
 {
@@ -18,7 +19,7 @@ class Loan extends Model
 
     protected $guarded = ['id'];
 
-    public $appends = ['sisa_angsuran', 'angsuran_terakhir'];
+    public $appends = ['sisa_angsuran', 'angsuran_terakhir', 'total_savings'];
 
     public function getSisaAngsuranAttribute() {
         $totalAngsuran = \App\Models\InstallmentPayment::where('loan_id', $this->id)->count();
@@ -34,6 +35,17 @@ class Loan extends Model
         return 'Belum ada pembayaran ditemukan';
     }
 
+    public function getTotalSavingsAttribute() {
+        $wajib = $this->savings->where('type', Saving::WAJIB)->sum('amount');
+        $sukarela = $this->savings->where('type', Saving::SUKARELA)->sum('amount');
+
+        return $wajib + $sukarela;
+    }
+
+    public function savings(){
+        return $this->hasMany(Saving::class, 'user_id', 'created_id');
+    }
+    
     public function user(){
         return $this->belongsTo(User::class, 'created_id');
     }

@@ -81,7 +81,11 @@ class LoanController extends Controller
             $loan = Loan::where('created_id', $this->getUserId())->where('status', Loan::WAITING)->first();
             if(!$loan) {
                 $this->data['profile'] = $profile;
-                $this->data['current_saving'] = (int) Saving::where('user_id', $this->getUserId())->sum('amount');
+                $this->data['current_saving'] = (int) Saving::where('user_id', $this->getUserId())
+                                ->where('type', Saving::WAJIB)
+                                ->orWhere('user_id', $this->getUserId())
+                                ->where('type', Saving::SUKARELA)
+                                ->sum('amount');
                 $this->data['current_saving_formatted'] = 'Rp. ' . number_format($this->data['current_saving']);
                 $this->data['max_loan_formatted'] = $this->data['current_saving'] * 2;
                 $this->data['max_loan_formatted'] = 'Rp. ' . number_format($this->data['current_saving'] * 2);
@@ -94,10 +98,15 @@ class LoanController extends Controller
     }
 
     public function store(Request $request) {
+        if(!$request->sign) {
+            return redirect()->back()->with('failed', 'Tanda tangan tidak valid, silahkan coba lagi');
+        }
+        $sign = $this->saveSignature($request->sign);
         $params = $request->only(['amount', 'loan_service', 'total', 'description', 'installment_per_month', 'total_month']);
         $params['type'] = 'Angsuran';
         $params['created_id'] = $this->getUserId();
         $params['status'] = Loan::WAITING;
+        $params['signature'] = $sign;
         
         $loan = Loan::create($params);
 
@@ -108,12 +117,30 @@ class LoanController extends Controller
         return redirect(route('member.loans.all'))->with('failed', 'Gagal melakukan pengajuan peminjaman, silahkan coba beberapa saat lagi');
     }
 
+
+    public function saveSignature($base64_image) {
+        //get the base-64 from data
+        $base64_str = substr($base64_image, strpos($base64_image, ",")+1);
+        //decode base64 string
+        $imgname = time() . rand() . 'signature.png';
+        $image = base64_decode($base64_str);
+        \Storage::disk('public')->put('signature/'.$imgname, $image);
+        $storagePath = \Storage::disk('public')->getDriver()->getAdapter()->getPathPrefix();
+        $response = array(
+            'status' => 'success',
+        );
+
+        return 'storage/signature/'.$imgname;
+}
+
     public function confirmIndex(Request $request) {
         $this->data['loans'] = Loan::with(['user.profile'])->where('status', Loan::WAITING)->orderBy('created_at', 'desc')->get();
+        // return $this->data;
         return view('pages/chief/loan/confirm-index', $this->data);
     }
     
     public function actionConfirm(Request $request){
+        $message = '';
         if($request->action === 'confirmed') {
             $params = [
                 'is_confirmed' => true,
@@ -121,6 +148,7 @@ class LoanController extends Controller
                 'confirmed_at' => Carbon::now()->format('Y-m-d H:i:d'),
                 'status' => Loan::CONFIRMED
             ];
+            $message = 'Berhasil melakukan konfirmasi peminjaman dengan status diterima';
         }elseif($request->action === 'rejected') {
             $params = [
                 'is_confirmed' => false,
@@ -128,11 +156,12 @@ class LoanController extends Controller
                 'declined_at' => Carbon::now()->format('Y-m-d H:i:d'),
                 'declined_reason' => $request->cancelation_note,
                 'status' => Loan::DECLINEED
-            ];;
+            ];
+            $message = 'Pengajuan peminjaman berhasil ditolak';
         }
         $loan = Loan::find($request->id)->update($params);
         if($loan) {
-            return redirect(route('chief.confirm.loan.index'))->with('success', 'Berhasil melakukan konfirmasi peminjaman dengan status '.$request->action == 'confirmed' ? 'diterima' : 'ditolak'.'!');
+            return redirect(route('chief.confirm.loan.index'))->with('success', $message);
         }
         return redirect(route('chief.confirm.loan.index'))->with('failed', 'something went wrong!');
     }

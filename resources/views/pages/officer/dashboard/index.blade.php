@@ -8,7 +8,7 @@
                 <div class="card-header">
                     <h5 class="card-category">Simpanan Pokok</h5>
                     <h3 class="card-title"><i class="tim-icons icon-bell-55 text-primary"></i>
-                        {{ $count['simpanan_pokok'] }}</h3>
+                        Rp. {{ number_format($count['simpanan_pokok']) }}</h3>
                 </div>
             </div>
         </div>

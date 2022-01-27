@@ -43,6 +43,9 @@
                                         Tanggal
                                     </th>
                                     <th>
+                                        Info
+                                    </th>
+                                    <th>
                                         Opsi
                                     </th>
                                 </tr>
@@ -74,6 +77,24 @@
                                         </td>
                                         <td>
                                             {{ \Carbon\Carbon::parse($item->created_at)->format('d M Y H:i') }}
+                                        </td>
+                                        <td>
+                                            <div
+                                                style="background: white; box-shadow: 1px 1px 10px rgb(174, 174, 174); padding: 10px; border-radius: 15px">
+                                                <p>Simpanan Member (Wajib+Sukarela) :
+                                                    Rp.<b>{{ number_format($item->total_savings) }}</b></p>
+                                                <p>Max Pinjaman (2X (Wajib+Sukarela)) :
+                                                    <b>Rp.{{ number_format($item->total_savings * 2) }}</b>
+                                                </p>
+                                                <hr>
+                                                <p>Tanda Tangan :</p>
+                                                @if ($item->signature)
+                                                    <img width="150px" src="{{ url($item->signature) }}"
+                                                        alt="TTD Anggota">
+                                                @else
+                                                    -
+                                                @endif
+                                            </div>
                                         </td>
                                         <td>
                                             <button class="btn btn-success btn-sm"
